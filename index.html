@@ -6,6 +6,112 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+<script>
+var baseURL = 'http://flask34-env.kc32nk5mrp.us-east-2.elasticbeanstalk.com/'
+
+function getCompanyList()
+{
+    // Creates the URL
+    var url = baseURL + 'api/get/companies'
+
+    $.get(url, function(data)
+    {
+        var jsonObject = JSON.parse(JSON.stringify(data))
+        var companiesList = jsonObject.companies
+        var displayHeaders = ["ID", "Name", "Address", "City"]
+        var headersList = ["CompanyID", "CompanyName", "StreetAddress", "City"]
+        createTable(companiesList, displayHeaders, headersList, "#companiesTable")
+    });
+}
+
+function getEmployeesList()
+{
+    // Gets the name from the input checks it
+    var companyID = document.getElementById("getCompanyID").value;
+
+    if (typeof companyID === 'undefined' || !companyID)
+    {
+        alert("Please enter a Company ID")
+        return
+    }
+
+    if(!(Math.floor(companyID) == companyID && $.isNumeric(companyID)))
+    {
+        alert("Please enter a Number for the Company ID")
+        return
+    }
+
+    // Creates the URL
+    var url = baseURL + 'api/get/employees/' + companyID
+
+    $.get(url, function(data)
+    {
+        var jsonObject = JSON.parse(JSON.stringify(data))
+        var employeesList = jsonObject.employees
+        var displayHeaders = ["Last Name", "First Name", "Market Value of Assets", "Total Contribution"]
+        var headersList = ["Surname", "GivenName", "TotalMarketValue", "TotalContribution"]
+        createTable(employeesList, displayHeaders, headersList, "#employeesTable")
+    });
+}
+
+function getSingleEmployee()
+{
+    // Gets the name from the input checks it
+    var employeeID = document.getElementById("getEmployeeID").value;
+
+    if (typeof employeeID === 'undefined' || !employeeID)
+    {
+        alert("Please enter an Employee ID")
+        return
+    }
+
+    if(!(Math.floor(employeeID) == employeeID && $.isNumeric(employeeID)))
+    {
+        alert("Please enter a Number for the Employee ID")
+        return
+    }
+
+    // Creates the URL
+    var url = baseURL + 'api/get/employees/single/' + employeeID
+
+    $.get(url, function(data)
+    {
+        var jsonObject = JSON.parse(JSON.stringify(data))
+        var employeesList = jsonObject.funds
+        var displayHeaders = ["Ticker", "Issuer", "Segment", "Market Value Per Share", "Quantity", "Total Market Value", "Average Cost Basis", "Total Cost", "Total Profit Loss"]
+        var headersList = ["Ticker", "Issuer", "Segment", "MarketValuePerShare", "Quantity", "TotalMarketValue", "AverageCostBasis", "TotalCost", "TotalProfitLoss"]
+        createTable(employeesList, displayHeaders, headersList, "#singleEmployeeTable")
+    });
+}
+
+function createTable(jsonObject, displayHeaders, headersList, tableID)
+{
+    // Utility stuff
+    clearTable(tableID)
+    var trBegin="<tr>"
+    var trEnd="</tr>"
+
+    // Appends Header
+    $(tableID).append(trBegin)
+    for (var i = 0; i < displayHeaders.length; i++)
+        $(tableID).append("<th>" + displayHeaders[i] + "</th>")
+    $(tableID).append(trEnd)
+
+    // Appends each row
+    for (var i = 0; i < jsonObject.length; i++)
+    {
+        $(tableID).append(trBegin)
+        for (var j = 0; j < headersList.length; j++)
+            $(tableID).append("<td>" + jsonObject[i][headersList[j]] + "</td>")
+        $(tableID).append(trEnd)
+    }
+}
+
+function clearTable(tableID)
+{
+    $(tableID).html("")
+}
+</script>
 </head>
 
 <body>
